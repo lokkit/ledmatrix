@@ -11,7 +11,7 @@ with open('README.rst') as readme_file:
 requirements = [
     'Click>=6.0',
     'Adafruit-LED-Backpack==1.8.1',
-    'Pillow==4.2.1'
+    'Pillow==2.6.1'
 ]
 
 setup(
