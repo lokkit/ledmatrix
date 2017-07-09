@@ -3,18 +3,27 @@
 """Console script for ledmatrix."""
 
 import click
-
 import time
+from os import path
 from PIL import Image
 from PIL import ImageDraw
 from random import randint
 
 from Adafruit_LED_Backpack import BicolorMatrix8x8
 
+root_dir = path.dirname(__file__)
+
 # Create display instance on default I2C address (0x70) and bus number.
 display = BicolorMatrix8x8.BicolorMatrix8x8()
 # Initialize the display. Must be called once before using the display.
 display.begin()
+
+def display_image(image_filename):
+    with Image.open(path.join(root_dir, 'displays', image_filename)).rotate(90) as image:
+        display.clear()
+        draw = ImageDraw.Draw(image)
+        display.set_image(image)
+        display.write_display()
 
 @click.group()
 def cli():
@@ -41,7 +50,7 @@ def dice(number):
     _dice(number)
 
 def _dice(number):
-    display_image(Image.open('ledmatrix/dice_{}.png'.format(number)).rotate(90))
+    display_image('dice_{}.png'.format(number))
 
 @cli.command()
 @click.argument('number', type=int)
@@ -49,7 +58,7 @@ def inverse_dice(number):
     _inverse_dice(number)
 
 def _inverse_dice(number):
-    display_image(Image.open('ledmatrix/dice_inverse_{}.png'.format(number)).rotate(90))
+    display_image('dice_inverse_{}.png'.format(number))
 
 @cli.command()
 @click.argument('iterations', type=int)
@@ -63,7 +72,7 @@ def _roll_the_dice(iterations):
         while rnd == lastint:
             rnd = randint(1, 6)
         lastint = rnd
-        display_image(Image.open('ledmatrix/dice_{}.png'.format(rnd)).rotate(90))
+        display_image('dice_{}.png'.format(rnd))
         time.sleep(0.1)
     display.clear()
     display.write_display()
@@ -80,10 +89,8 @@ def _roll_the_number(iterations):
         while rnd == lastint:
             rnd = randint(1, 6)
         lastint = rnd
-        display_image(Image.open('ledmatrix/number_{}.png'.format(rnd)).rotate(90))
+        display_image('number_{}.png'.format(rnd))
         time.sleep(0.1)
-    #display.clear()
-    #display.write_display()
 
 @cli.command()
 @click.argument('x', type=int)
@@ -92,7 +99,7 @@ def number(x):
 
 def _number(x):
     """Display number x on screen."""
-    display_image(Image.open('ledmatrix/number_{}.png'.format(x)).rotate(90))
+    display_image('number_{}.png'.format(x))
 
 @cli.command()
 @click.argument('x', type=int)
@@ -101,14 +108,8 @@ def inverse_number(x):
 
 def _inverse_number(x):
     """Display number x on screen."""
-    display_image(Image.open('ledmatrix/number_inverse_{}.png'.format(x)).rotate(90))
+    display_image('number_inverse_{}.png'.format(x))
 
-
-def display_image(image):
-    display.clear()
-    draw = ImageDraw.Draw(image)
-    display.set_image(image)
-    display.write_display()
 
 @cli.command()
 @click.argument('iterations', type=int)
@@ -116,8 +117,8 @@ def loading_lokk(iterations):
     _loading_lokk(iterations)
 
 def _loading_lokk(iterations):
-    image_open = Image.open('ledmatrix/lokkit_icon_borderless.png').rotate(90)
-    image_closed = Image.open('ledmatrix/lokkit_icon_borderless_closed.png').rotate(90)
+    image_open = display_image('lokkit_icon_borderless.png')
+    image_closed = display_image('lokkit_icon_borderless_closed.png')
     i = 0
     for x in xrange(iterations):
         display.clear()
@@ -155,20 +156,18 @@ def _loading_square_in(iterations):
 
 @cli.command()
 def lokk_open():
-    display_image(Image.open('ledmatrix/lokkit_icon_borderless.png').rotate(90))
+    display_image('lokkit_icon_borderless.png')
 
 @cli.command()
 def lokk_closed():
-    display_image(Image.open('ledmatrix/lokkit_icon_borderless_closed.png').rotate(90))
+    display_image('lokkit_icon_borderless_closed.png')
 
 @cli.command()
 def tick():
     _tick()
 
 def _tick():
-    image = Image.open('ledmatrix/tick.png').rotate(90)
-    display.set_image(image)
-    display.write_display()
+    display_image('tick.png')
 
 @cli.command()
 @click.argument('iterations', type=int)
